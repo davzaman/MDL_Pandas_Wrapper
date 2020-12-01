@@ -109,16 +109,14 @@ class MDLDiscretizer:
         )
 
     def transform(
-        self, df: pd.DataFrame, class_name: str, mapped: bool = True
+        self, df: pd.DataFrame, continuous_cols: List[str], mapped: bool = True
     ) -> pd.DataFrame:
         """Transforms df directly, no need to convert to Orange Table.
         Orange has an issue where transform will fit the data again, this is a workaround.
         """
         cont_data = df.copy()  # to keep original df intact
 
-        cols = [col for col in cont_data.columns if col != class_name]
-
-        for col in cols:
+        for col in continuous_cols:
             bins = dict2list(self.dicts[col])
             if mapped:
                 labels = list(self.dicts[col].values())
@@ -151,4 +149,4 @@ if __name__ == "__main__":
     print(discritizer.dicts)
     print("\n")
     print("Transformed data: ")
-    print(discritizer.transform(iris_df[:3], "target"))
+    print(discritizer.transform(iris_df[:3], iris["feature_names"]))

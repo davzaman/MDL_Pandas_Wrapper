@@ -93,11 +93,13 @@ class MDLDiscretizer:
         continuous_cols: List[str],
         force: bool = True,
         mapped: bool = True,
-    ):
+    ) -> pd.DataFrame:
         cont_data = df2Orange(df, y, continuous_cols)
-        self._fit_transform(cont_data, force, mapped)
+        return self._fit_transform(cont_data, force, mapped)
 
-    def _fit_transform(self, cont_data: Table, force: bool = True, mapped: bool = True):
+    def _fit_transform(
+        self, cont_data: Table, force: bool = True, mapped: bool = True
+    ) -> pd.DataFrame:
         d_cont_data, self.disc = get_discretized_MDL_data(cont_data, force=force)
         self.cols = [attr.name for attr in d_cont_data.domain.attributes]
         self.list_of_values = [attr.values for attr in d_cont_data.domain.attributes]

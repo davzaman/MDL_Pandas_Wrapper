@@ -61,6 +61,14 @@ def df2Orange(df: pd.DataFrame, y: pd.Series, continuous_cols: List[str]) -> Tab
     return data
 
 
+def merge_disc_vars(old: pd.DataFrame, new: pd.DataFrame) -> pd.DataFrame:
+    """Merge newly discretizes vars with original dataframe."""
+    # the new discretized df will have its index reset already
+    return pd.concat([old.reset_index(), new], axis=1, ignore_index=False).drop(
+        ["index"], axis=1
+    )
+
+
 class MDLDiscretizer:
     def __init__(self):
         self.cols = []
@@ -95,7 +103,8 @@ class MDLDiscretizer:
         mapped: bool = True,
     ) -> pd.DataFrame:
         cont_data = df2Orange(df, y, continuous_cols)
-        return self._fit_transform(cont_data, force, mapped)
+        df_disc = self._fit_transform(cont_data, force, mapped)
+        return merge_disc_vars(df[df.columns.difference(continuous_cols)], df_disc)
 
     def _fit_transform(
         self, cont_data: Table, force: bool = True, mapped: bool = True
